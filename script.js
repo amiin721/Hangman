@@ -5,114 +5,104 @@ const popup = document.getElementById('popup-container');
 const notification = document.getElementById('notification-container');
 const finalMessage = document.getElementById('final-message');
 
-const figureParts= document.querySelectorAll(".figure-part");
+const figureParts = document.querySelectorAll(".figure-part");
 
-// const request = new XMLHttpRequest();
+var URL = "https://random-word-api.herokuapp.com/word?length=5";
 
-// const api = 'http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=5&maxLength=15&limit=1&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
+async function getword(){
+    const res = await fetch(URL);
+    const data = await res.json();
+    for(let r of data){
+        selectedWord = r;
+    }
+}
 
-// function fetchData() {
-//     const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
-   
-//     fetch(corsProxyUrl + api)
-//         .then(response => response.json())
-//         .then(data => {
-//             // Process the JSON response
-//             console.log(data[0].word);
-            
-//         })
-//         .catch(error => {
-//             // Handle any errors
-//             console.log(error);
-//         });
-// }
+getword();
 
-// function setselectedword() {
-//     console.log(request.response);
-// }
+let selectedWord = "iuytr";
 
-const words = ['apple', 'joker', 'javascript', 'giant', 'baloon' , 'elegant', 'frog', 'whooper' ,'basic'];
+// const words = ['apple', 'joker', 'javascript', 'giant', 'baloon', 'elegant', 'frog', 'whooper', 'basic'];
 
-let selectedWord = words[Math.floor(Math.random() * words.length)];
+// let selectedWord = words[Math.floor(Math.random() * words.length)];
 
 const correctLetters = [];
 const wrongLetters = [];
 
 //Show hidden word
-function displayWord(){
+function displayWord() {
     wordE1.innerHTML = `
     ${selectedWord
-    .split('')
-    .map(
-        letter =>`
+            .split('')
+            .map(
+                letter => `
         <span class="letter">
         ${correctLetters.includes(letter) ? letter : ''}
         </span>
         `
-    )
-    .join('')}
+            )
+            .join('')}
     `;
 
     const innerWord = wordE1.innerText.replace(/\n/g, '');
 
-    if(innerWord === selectedWord){
+    if (innerWord === selectedWord) {
         finalMessage.innerText = 'You Won';
-        popup.style.display= 'flex';
-        window.removeEventListener('keydown',disp);
+        popup.style.display = 'flex';
+        window.removeEventListener('keydown', disp);
     }
 }
 
-const disp = (e) =>{
-    if(e.keyCode >= 65 && e.keyCode <=90){
+const disp = (e) => {
+    if (e.keyCode >= 65 && e.keyCode <= 90) {
         const letter = e.key;
 
-        if(selectedWord.includes(letter)){
-            if(!correctLetters.includes(letter)){
+        if (selectedWord.includes(letter)) {
+            if (!correctLetters.includes(letter)) {
                 correctLetters.push(letter);
 
                 displayWord();
-            } else{
+            } else {
                 showNotification();
             }
-        } else{
-            if(!wrongLetters.includes(letter)){
+        } else {
+            if (!wrongLetters.includes(letter)) {
                 wrongLetters.push(letter);
 
                 updateWrongLetterE1();
-            } else{
+            } else {
                 showNotification();
             }
         }
     }
 }
 
-window.addEventListener('keydown', disp );
+window.addEventListener('keydown', disp);
 
-function updateWrongLetterE1(){
+function updateWrongLetterE1() {
     wrongLettersE1.innerHTML = `
     ${wrongLetters.length > 0 ? '<p>Wrong Letters :</p>' : ''}
     ${wrongLetters.map(letter => `<span>${letter}</span>`)}
     `;
 
-    figureParts.forEach((part,index) => {
+    figureParts.forEach((part, index) => {
         const errors = wrongLetters.length;
 
-        if(index < errors) {
+        if (index < errors) {
             part.style.display = 'block'
         }
-        else{
+        else {
             part.style.display = 'none';
         }
     });
 
-    if(wrongLetters.length === figureParts.length){
+    if (wrongLetters.length === figureParts.length) {
         finalMessage.innerText = `You Lost. The word was "${selectedWord}"\nBetter luck next time!`;
         popup.style.display = 'flex';
-        window.removeEventListener('keydown',disp);
+        window.removeEventListener('keydown', disp);
     }
 }
 
-function showNotification(){
+function showNotification() {
     notification.classList.add('show');
 
     setTimeout(() => {
@@ -124,9 +114,9 @@ playAgainBtn.addEventListener('click', () => {
     correctLetters.splice(0);
     wrongLetters.splice(0);
 
-    window.addEventListener('keydown', disp );
+    window.addEventListener('keydown', disp);
 
-    selectedWord = words[Math.floor(Math.random() * words.length)];
+    getword();
 
     displayWord();
 

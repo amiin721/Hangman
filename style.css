@@ -149,6 +149,10 @@ h2 {
     margin: 0;
 }
 
+#unvis{
+    display: none;
+    visibility: hidden;
+}
 .notification-container.show {
     transform: translateY(-50px);
 }
